@@ -2,16 +2,15 @@
 # This is the main app. Main user interface will be supplied here.                      #
 #====================================================================================== # 
 
-
 from generate.generate import generate_graph
 import networkx as nx
 import snap
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
-import timeit
-from preprocess.properties import graph_prop, cluster_props
-from preprocess.process import kmean, get_subgraph_cluster, louvain, propagation, shrink_graph
+import time
+from preprocess.properties import cluster_props, graph_prop
+from preprocess.process import kmean, louvain, propagation, shrink_graph, plot_graph
 
 def main(args): 
     # ---------Loading in File---------
@@ -23,7 +22,7 @@ def main(args):
 
     # shrink_graph(data_edge_list, 100000)      # Initial Stages to format dataset
     # ---------Clustering Options---------
-    options = "1. Louvain\n2. KMeans\n3. Propagation\n4. List Graph Properties\n"
+    options = "1. Louvain\n2. KMeans\n3. Propagation\n4. List Graph Properties\n5. Plot graph\n"
     userInput = input(f"Cluster Algorithm: [Enter: 1,2,3,..]\n{options}")
     if(userInput == "1"):
         dendogram, df_aggregate = louvain(nx.adjacency_matrix(data_edge_list))
@@ -38,6 +37,9 @@ def main(args):
         graph.PrintInfo("Original Python type TNEANet")
         graph_prop(graph)
         return
+    elif(userInput == "5"):
+        plot_graph(data_edge_list)
+        return
 
     labels_unique, counts = np.unique(dendogram, return_counts=True)
     print(f"number of clusters: {str(len(set(dendogram)))}\n nodes per clusters: {counts}")
@@ -48,12 +50,15 @@ def main(args):
 
     userInput = input(f"New graph size (Number of Nodes): [Enter: 1,2,3,..]\n")
 
+    start_time = time.time()
     new_graph = generate_graph(graph, dendogram,int(userInput),df_aggregate)
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
     graph.PrintInfo("Original Python type TNEANet")
     graph_prop(graph)
 
-    new_graph.SaveEdgeList("test.txt", "Save as tab-separated list of edges")
+    new_graph.SaveEdgeList("synthetic graphs/test.txt", "Save as tab-separated list of edges")
 
     new_graph.PrintInfo("Synthetic Python type TNEANet")
     graph_prop(new_graph)

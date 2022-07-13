@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from preprocess.process import get_subgraph_cluster
+from preprocess.process import get_edge_list, get_subgraph_cluster
 import snap
 import numpy as np
 import pandas as pd
@@ -18,16 +18,11 @@ def graph_prop(graph):
     print(f"  count the number of triads in G: {graph.GetTriads()}")
     print(f"  clustering coefficient: {graph.GetClustCf()}")
 
-def cluster_props(graph, dendogram, cluster):
+def cluster_props(graph, dendogram):
     # Get graph props of x cluster
-    for x in range(cluster):
+    clusters = np.unique(dendogram)
+    for x in clusters:
         graph_cluster = get_subgraph_cluster(dendogram, get_edge_list(graph), x)
         snap_subgraph = graph.GetSubGraph(list(map(int, graph_cluster)))
         snap_subgraph.PrintInfo(f"Python subgraph {x}")
         graph_prop(snap_subgraph)
-
-def get_edge_list(graph): 
-    edge_list = []
-    for node in graph.Nodes():
-        edge_list.append(node.GetId())
-    return edge_list

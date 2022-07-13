@@ -29,6 +29,10 @@ def generate_graph(graph, dendogram, num_nodes, df_aggregate):
 #==================================#
     
     for node in new_nodes:
+    #============ADD NODE==============#
+        new_graph.AddNode(node)
+    #==================================#
+
     #========CLUSTER ASSIGNMENT========#
         # Sample from cluster probability distribution
         cluster_assignment = np.random.choice(labels_unique, p=cluster_distribution)
@@ -81,12 +85,7 @@ def generate_graph(graph, dendogram, num_nodes, df_aggregate):
 
             # Sample from probability distribution
             edges_w_clusters_in = np.random.choice(in_degrees, p=counts_distribution)
-            # print(f"Banana: {in_degrees} and {counts_distribution} and {edges_w_clusters_in}")
     # #==================================#
-
-    #============ADD NODES=============#
-        new_graph.AddNode(node)
-    #==================================#
 
     #============ADD EDGES=============#
         # If edges between cluster exist, add the edge to other cluster
@@ -96,6 +95,7 @@ def generate_graph(graph, dendogram, num_nodes, df_aggregate):
             new_graph.AddEdge(node, other_node)
         
         # Find nodes to connect to that are in the same cluster
+        # np.setdiff1d - ensures no self-cycles are present
         used_nodes = [node]
         for i in range(0, edges_w_clusters):
             other_node = int(np.random.choice(np.setdiff1d(graph_cluster, used_nodes)))
@@ -108,5 +108,4 @@ def generate_graph(graph, dendogram, num_nodes, df_aggregate):
             used_nodes.append(other_node)
             new_graph.AddEdge(other_node ,node)
     #==================================#
-
     return new_graph
