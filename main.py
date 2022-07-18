@@ -21,22 +21,26 @@ def main(args):
 
     # shrink_graph(data_edge_list, 100000)      # Initial Stages to format dataset
     # ---------Clustering Options---------
-    options = "1. Louvain\n2. KMeans\n3. Propagation\n4. List Graph Properties\n5. Plot graph\n"
-    userInput = input(f"Cluster Algorithm: [Enter: 1,2,3,..]\n{options}")
+    options = "1. Cluster\n2. List Graph Properties\n3. Plot graph\n"
+
+    userInput = input(f"User options: [Enter: 1,2,3]\n{options}")
     if(userInput == "1"):
-        dendrogram, df_aggregate = louvain(nx.adjacency_matrix(data_edge_list))
+        options = "1. Louvain\n2. KMeans\n3. Propagation\n"
+        userInput = input(f"Clustering Algorithms: [Enter: 1,2,3]\n{options}")
+        if(userInput == "1"):
+            dendrogram, df_aggregate = louvain(nx.adjacency_matrix(data_edge_list))
+        elif(userInput == "2"):
+            clusters = input("Clusters for KMeans: [Enter: 1,2,3,..]\n")
+            dendrogram, df_aggregate = kmean(nx.adjacency_matrix(data_edge_list), int(clusters))
+        elif(userInput == "3"):
+            dendrogram, df_aggregate = propagation(nx.adjacency_matrix(data_edge_list))
     elif(userInput == "2"):
-        clusters = input("Clusters for KMeans: [Enter: 1,2,3,..]\n")
-        dendrogram, df_aggregate = kmean(nx.adjacency_matrix(data_edge_list), int(clusters))
-    elif(userInput == "3"):
-        dendrogram, df_aggregate = propagation(nx.adjacency_matrix(data_edge_list))
-    elif(userInput == "4"):
         graph = snap.LoadEdgeList(snap.TNGraph, args['file'], 0, 1)
         graph = graph.ConvertGraph(snap.TNGraph, True)
         graph.PrintInfo("Original Python type TNEANet")
         graph_prop(graph)
         return
-    elif(userInput == "5"):
+    elif(userInput == "3"):
         plot_graph(data_edge_list)
         return
 
