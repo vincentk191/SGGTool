@@ -35,9 +35,9 @@ def propagation(data):
 
     return labels, df
 
-def get_subgraph_cluster(dendogram, nodelist, cluster):
+def get_subgraph_cluster(dendrogram, nodelist, cluster):
     indices = []
-    for i,x in enumerate(dendogram):
+    for i,x in enumerate(dendrogram):
         if x == cluster:
             indices.append(i)
     res_list = [nodelist[i] for i in indices]

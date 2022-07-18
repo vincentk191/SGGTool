@@ -8,14 +8,14 @@ import pandas as pd
 # All high level functions for generation will be handled here                          #
 #====================================================================================== # 
 
-def generate_graph(graph, dendogram, num_nodes, df_aggregate):
+def generate_graph(graph, dendrogram, num_nodes, df_aggregate):
 #=========SETUP VARIABLES=========#
-    total_nodes = len(dendogram)
+    total_nodes = len(dendrogram)
     new_graph = snap.ConvertGraph(type(graph), graph)
 
     df_aggregate_temp = df_aggregate.copy()
     np.fill_diagonal(df_aggregate_temp.values, 0)
-    labels_unique, counts = np.unique(dendogram, return_counts=True)
+    labels_unique, counts = np.unique(dendrogram, return_counts=True)
 
     # Form probability distribution of nodes in clusters
     cluster_distribution = [count / total_nodes for count in counts]
@@ -52,7 +52,7 @@ def generate_graph(graph, dendogram, num_nodes, df_aggregate):
     #==================================#
 
     ##=========WITHIN CLUSTERS==========#
-        graph_cluster = get_subgraph_cluster(dendogram, get_edge_list(graph), cluster)
+        graph_cluster = get_subgraph_cluster(dendrogram, get_edge_list(graph), cluster)
         cluster_graph = graph.GetSubGraph(list(map(int, graph_cluster)))
         OutDegToCntV = cluster_graph.GetOutDegCnt()
         InDegToCntV = cluster_graph.GetInDegCnt()
@@ -90,7 +90,7 @@ def generate_graph(graph, dendogram, num_nodes, df_aggregate):
     #============ADD EDGES=============#
         # If edges between cluster exist, add the edge to other cluster
         if(edges_b_cluster):
-            graph_b_cluster = get_subgraph_cluster(dendogram, get_edge_list(graph), b_cluster)
+            graph_b_cluster = get_subgraph_cluster(dendrogram, get_edge_list(graph), b_cluster)
             other_node = int(np.random.choice(graph_b_cluster))
             new_graph.AddEdge(node, other_node)
         

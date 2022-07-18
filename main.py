@@ -5,7 +5,6 @@
 from generate.generate import generate_graph
 import networkx as nx
 import snap
-import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import time
@@ -25,12 +24,12 @@ def main(args):
     options = "1. Louvain\n2. KMeans\n3. Propagation\n4. List Graph Properties\n5. Plot graph\n"
     userInput = input(f"Cluster Algorithm: [Enter: 1,2,3,..]\n{options}")
     if(userInput == "1"):
-        dendogram, df_aggregate = louvain(nx.adjacency_matrix(data_edge_list))
+        dendrogram, df_aggregate = louvain(nx.adjacency_matrix(data_edge_list))
     elif(userInput == "2"):
         clusters = input("Clusters for KMeans: [Enter: 1,2,3,..]\n")
-        dendogram, df_aggregate = kmean(nx.adjacency_matrix(data_edge_list), int(clusters))
+        dendrogram, df_aggregate = kmean(nx.adjacency_matrix(data_edge_list), int(clusters))
     elif(userInput == "3"):
-        dendogram, df_aggregate = propagation(nx.adjacency_matrix(data_edge_list))
+        dendrogram, df_aggregate = propagation(nx.adjacency_matrix(data_edge_list))
     elif(userInput == "4"):
         graph = snap.LoadEdgeList(snap.TNGraph, args['file'], 0, 1)
         graph = graph.ConvertGraph(snap.TNGraph, True)
@@ -41,8 +40,8 @@ def main(args):
         plot_graph(data_edge_list)
         return
 
-    labels_unique, counts = np.unique(dendogram, return_counts=True)
-    print(f"number of clusters: {str(len(set(dendogram)))}\n nodes per clusters: {counts}")
+    labels_unique, counts = np.unique(dendrogram, return_counts=True)
+    print(f"number of clusters: {str(len(set(dendrogram)))}\nnodes per clusters: {counts}")
 
     # ---------Graph Properties---------
     graph = snap.LoadEdgeList(snap.TNGraph, args['file'], 0, 1)
@@ -51,17 +50,19 @@ def main(args):
     userInput = input(f"New graph size (Number of Nodes): [Enter: 1,2,3,..]\n")
 
     start_time = time.time()
-    new_graph = generate_graph(graph, dendogram,int(userInput),df_aggregate)
+    new_graph = generate_graph(graph, dendrogram,int(userInput),df_aggregate)
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
     graph.PrintInfo("Original Python type TNEANet")
     graph_prop(graph)
 
-    new_graph.SaveEdgeList("synthetic graphs/test.txt", "Save as tab-separated list of edges")
 
     new_graph.PrintInfo("Synthetic Python type TNEANet")
     graph_prop(new_graph)
+
+    filename = input(f"Synthetic Graph Name: ")
+    new_graph.SaveEdgeList(f"synthetic graphs/{filename}.txt", "Save as tab-separated list of edges")
 
     file.close   
 
